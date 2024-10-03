@@ -114,6 +114,16 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 			printf ("\t canary_2 == %x\n", (*ptr_stk).canary_2);
 	    #endif
 
+		#ifdef CANARY_STK_DATA
+
+			canary_t canary_3 = *((*ptr_stk).data - 1);
+			canary_t canary_4 = *((*ptr_stk).data + (*ptr_stk).capacity);
+
+			printf ("\t canary_3 == %x\n", canary_3);
+			printf ("\t canary_4 == %x\n", canary_4);
+
+		#endif
+
 		printf ("\t SIZE > CAPACITY\n\n");
 
 		return SIZE_MORE_CAPACITY;
@@ -138,6 +148,30 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 			printf ("\t canary_1 or canary_2 != canary_true\n\n");
 
 			return CANARY_STK_ERROR;
+		}
+	#endif
+
+	//-----------------------------------------------------------------------------------------------------------------
+
+	#ifdef CANARY_STK_DATA
+
+		if (error_status == CANARY_STK_DATA_ERROR)
+		{
+			printf ("ERROR   CANARY_STK_DATA_ERROR  in file: %s, in line: %d\n", file, line);
+			printf ("\t ptr_data == %p          \n", (*ptr_stk).data);
+			printf ("\t size     == %ld         \n", (*ptr_stk).size);
+			printf ("\t capacity == %ld         \n", (*ptr_stk).capacity);
+
+			printf ("\n");
+
+			canary_t canary_3 = *((*ptr_stk).data - 1);
+			canary_t canary_4 = *((*ptr_stk).data + (*ptr_stk).capacity);
+
+			printf ("\t canary_true == %x\n", canary);
+			printf ("\t canary_3 == %x\n", canary_3);
+			printf ("\t canary_4 == %x\n", canary_4);
+
+			printf ("\t canary_3 or canary_4 != canary_true\n\n");
 		}
 	#endif
 
