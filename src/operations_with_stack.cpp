@@ -14,23 +14,44 @@ errors_t stk_ctor (stk_t* ptr_stk, size_t start_capacity)
 
 	printf ("Begin Ctor\n");
 
-	(*ptr_stk).data     = (element_t*) calloc (start_capacity, sizeof (element_t));
+	#ifdef CANARY_STK 
+		(*ptr_stk).canary_1 = canary;
+		(*ptr_stk).canary_2 = canary;
+	#endif
+
+	#ifdef CANARY_STK_DATA
+		size_t place_canary_data = 2;
+
+	#else
+		size_t place_canary_data = 0;
+	#endif
+
+	element_t* ptr_memory   = (element_t*) calloc (start_capacity + place_canary_data, sizeof (element_t));
 	(*ptr_stk).size     = 0;
 	(*ptr_stk).capacity = start_capacity;
 
-	printf ("End Ctor\n");
+	#ifdef CANARY_STK_DATA
+		(*ptr_stk).data = ptr_memory + 1;
+
+		*ptr_memory                             = canary;
+		*(ptr_memory + 1 + (*ptr_stk).capacity) = canary;
+
+	#else 
+		(*ptr_stk).data = ptr_memory;
+	
+	#endif
+
+	printf ("End Ctor\n\n");
 
 	errors_t error_status = stk_error (ptr_stk);
 
-	if (error_status  != NOT_ERROR)
+	if (error_status != NOT_ERROR)
 	{
-		printf ("We can create your stack. Please, try again.\n");
+		printf ("We can not create your stack. Please, try again.\n");
 		printf ("This information can help your in find error.\n\n");
 
-		printf ("start_capacity== %ld\n", start_capacity);
+		printf ("start_capacity == %ld\n", start_capacity);
 		stk_dump (ptr_stk, __FILE__, __LINE__);
-
-		assert (NULL);
 
 		return error_status;
 	}
@@ -44,12 +65,10 @@ errors_t stk_dtor (stk_t* ptr_stk)
 {
 	assert (ptr_stk);
 
-	STK_ASSERT (ptr_stk, __FILE__, __LINE__);
-
-	free ((*ptr_stk).data);
 	(*ptr_stk).size     = 0;
 	(*ptr_stk).capacity = 0;
-
+	free ((*ptr_stk).data - 1);
+	
 	return NOT_ERROR;
 }
 
@@ -61,17 +80,27 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 	assert (file);
 
 	errors_t error_status = stk_error (ptr_stk);
+    
+	//--------------------------------------------------------------------------------------------------------------
 
 	if (error_status == FALL_PTR_DATA)
 	{
 		printf ("ERROR   FALL_PTR_DATA   in file: %s, in line: %d\n", file, line);
 		printf ("\t ptr_data == %p          \n", (*ptr_stk).data);
-		printf ("\t size     == %ld         \n", (*ptr_stk).size);
-		printf ("\t capacity == %ld         \n", (*ptr_stk).capacity);
+		printf ("\t size     == %x          \n", (*ptr_stk).size);
+		printf ("\t capacity == %x          \n", (*ptr_stk).capacity);
+
+		#ifdef CANARY_STK 
+			printf ("\t canary_1 == %x\n", (*ptr_stk).canary_1);
+			printf ("\t canary_2 == %x\n", (*ptr_stk).canary_2);
+	    #endif
+
 		printf ("\t PTR_DATA == NULL\n\n");
 
 		return FALL_PTR_DATA;
 	}
+
+	//------------------------------------------------------------------------------------------------------------------
 
 	if (error_status == SIZE_MORE_CAPACITY)
 	{
@@ -79,10 +108,40 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 		printf ("\t ptr_data == %p          \n", (*ptr_stk).data);
 		printf ("\t size     == %ld         \n", (*ptr_stk).size);
 		printf ("\t capacity == %ld         \n", (*ptr_stk).capacity);
+
+		#ifdef CANARY_STK 
+			printf ("\t canary_1 == %x\n", (*ptr_stk).canary_1);
+			printf ("\t canary_2 == %x\n", (*ptr_stk).canary_2);
+	    #endif
+
 		printf ("\t SIZE > CAPACITY\n\n");
 
 		return SIZE_MORE_CAPACITY;
 	}
+    
+	//--------------------------------------------------------------------------------------------------------------------
+
+	#ifdef CANARY_STK 
+		if (error_status == CANARY_STK_ERROR)
+		{
+			printf ("ERROR   CANARY_STK_ERROR  in file: %s, in line: %d\n", file, line);
+			printf ("\t ptr_data == %p          \n", (*ptr_stk).data);
+			printf ("\t size     == %ld         \n", (*ptr_stk).size);
+			printf ("\t capacity == %ld         \n", (*ptr_stk).capacity);
+
+			printf ("\n");
+			
+			printf ("\t canary_true == %x\n", canary);
+			printf ("\t canary_1    == %x\n", (*ptr_stk).canary_1);
+			printf ("\t canary_2    == %x\n", (*ptr_stk).canary_2);
+
+			printf ("\t canary_1 or canary_2 != canary_true\n\n");
+
+			return CANARY_STK_ERROR;
+		}
+	#endif
+
+	//------------------------------------------------------------------------------------------------------------------
 
 	if (error_status == NOT_ERROR)
 	{
@@ -91,12 +150,28 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 		printf ("\t ptr_data            == %p \n", (*ptr_stk).data    );
 		printf ("\t len type of element == %ld\n", sizeof (element_t) );
 		printf ("\t size                == %ld\n", (*ptr_stk).size    ); 
-		printf ("\t capacity            == %ld\n", (*ptr_stk).capacity);
+		printf ("\t capacity            == %ld\n\n", (*ptr_stk).capacity);
+
+		#ifdef CANARY_STK 
+			printf ("\t canary_1 == %x\n",   (*ptr_stk).canary_1);
+			printf ("\t canary_2 == %x\n\n", (*ptr_stk).canary_2);
+	    #endif
+
+		#ifdef CANARY_STK_DATA
+
+			canary_t canary_3 = *((*ptr_stk).data - 1);
+			canary_t canary_4 = *((*ptr_stk).data + (*ptr_stk).capacity);
+
+			printf ("\t canary_3 == %x\n", canary_3);
+			printf ("\t canary_4 == %x\n", canary_4);
+
+		#endif
+
 		printf ("\t elements of stack:\n");
 
 		for (size_t index_element = 0; index_element < (*ptr_stk).size; index_element++)
 		{
-			printf ("\t \t [%ld] == %lg\n", index_element, *((*ptr_stk).data + index_element));
+			printf ("\t \t [%ld] == %d\n", index_element, *((*ptr_stk).data + index_element));
 		}
 
 		printf ("\n\n");
@@ -130,15 +205,16 @@ errors_t stk_pop (stk_t* ptr_stk, element_t* ptr_element)
 
 	return NOT_ERROR;
 }
-//---------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 
 errors_t stk_push (stk_t* ptr_stk, element_t element)
 {
 	assert (ptr_stk);
 
 	STK_ASSERT (ptr_stk, __FILE__, __LINE__);
-
+	
 	*((*ptr_stk).data + (*ptr_stk).size) = element;
+
 	(  *ptr_stk).size                   += 1;
 
 	if ((*ptr_stk).size == (*ptr_stk).capacity) 
@@ -163,21 +239,53 @@ errors_t stk_realloc (stk_t* ptr_stk, mode_realloc_t reverse)
 
 	if (reverse == REVERSE_FALSE)
 	{
+		#ifdef CANARY_STK_DATA
+			size_t place_canary_data = 2;
+
+		#else
+			size_t place_canary_data = 0;
+		#endif
+
 		size_t new_capacity = (*ptr_stk).capacity * 2;
 
-		(*ptr_stk).data = (element_t*) realloc ((*ptr_stk).data, new_capacity * sizeof (element_t));
+		element_t* ptr_memory = (element_t*) realloc ((*ptr_stk).data - 1, (new_capacity + place_canary_data) * sizeof (element_t));
 
 		(*ptr_stk).capacity = new_capacity;
+
+		#ifdef CANARY_STK_DATA
+			(*ptr_stk).data = ptr_memory + 1;
+
+			*ptr_memory                             = canary;
+			*(ptr_memory + 1 + (*ptr_stk).capacity) = canary;
+		#else 
+			(*ptr_stk).data = ptr_memory;
+		#endif	
 
 	}
 
 	else
 	{
+		#ifdef CANARY_STK_DATA
+			size_t place_canary_data = 2;
+
+		#else
+			size_t place_canary_data = 0;
+		#endif
+
 		size_t new_capacity = (*ptr_stk).capacity / 4;
 
-		(*ptr_stk).data = (element_t*) realloc ((*ptr_stk).data, new_capacity * sizeof (element_t));
+		element_t* ptr_memory = (element_t*) realloc ((*ptr_stk).data - 1, (new_capacity +  place_canary_data) * sizeof (element_t));
 
 		(*ptr_stk).capacity = new_capacity;
+
+		#ifdef CANARY_STK_DATA
+			(*ptr_stk).data = ptr_memory + 1;
+
+			*ptr_memory                             = canary;
+			*(ptr_memory + 1 + (*ptr_stk).capacity) = canary;
+		#else 
+			(*ptr_stk).data = ptr_memory;
+		#endif	
 	}
 
 	STK_ASSERT (ptr_stk, __FILE__, __LINE__);

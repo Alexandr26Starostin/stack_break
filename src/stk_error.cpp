@@ -9,16 +9,44 @@
 errors_t stk_error (stk_t* ptr_stk)
 {
 	assert (ptr_stk);
+    
+	//-----------------------------------------------------------------------------------------
 
 	if ((*ptr_stk).data == NULL)
 	{
 		return FALL_PTR_DATA;
 	}
+    
+	//------------------------------------------------------------------------------------------
 
 	if ((*ptr_stk).size > (*ptr_stk).capacity)
 	{
 		return SIZE_MORE_CAPACITY;
 	}
+
+	//-----------------------------------------------------------------------------------------
+
+	#ifdef CANARY_STK
+		if (((*ptr_stk).canary_1 != canary) || ((*ptr_stk).canary_2 != canary))
+		{
+			return CANARY_STK_ERROR;
+		}
+	#endif
+
+	//-------------------------------------------------------------------------------------------
+
+	#ifdef CANARY_STK_DATA
+
+		canary_t canary_3 = *((*ptr_stk).data - 1);
+		canary_t canary_4 = *((*ptr_stk).data + (*ptr_stk).capacity);
+
+		if ((canary_3 != canary) || (canary_4 != canary))
+		{
+			return CANARY_STK_DATA_ERROR;
+		}
+	#endif
+
+	//--------------------------------------------------------------------------------------------
 
 	return NOT_ERROR;
 }
