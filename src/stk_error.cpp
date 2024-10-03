@@ -37,8 +37,8 @@ errors_t stk_error (stk_t* ptr_stk)
 
 	#ifdef CANARY_STK_DATA
 
-		canary_t canary_3 = *((*ptr_stk).data - 1);
-		canary_t canary_4 = *((*ptr_stk).data + (*ptr_stk).capacity);
+		canary_t canary_3 = *((canary_t*) ((char*) ((*ptr_stk).data) - sizeof (canary_t)));
+		canary_t canary_4 = *((canary_t*) ((char*) ((*ptr_stk).data) + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity % 8) * sizeof (char)));
 
 		if ((canary_3 != canary) || (canary_4 != canary))
 		{

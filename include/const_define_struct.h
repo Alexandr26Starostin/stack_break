@@ -11,7 +11,9 @@ typedef int element_t;
 
 #ifdef CANARY_STK 
 
-	typedef int canary_t;
+	#include "stdint.h"
+
+	typedef uint64_t canary_t;
 
 	const canary_t canary = 0xC0FFEE;
 
@@ -40,7 +42,9 @@ typedef int element_t;
     
 	#ifndef CANARY_STK
 
-		typedef int canary_t;
+		#include "stdint.h"
+
+		typedef uint64_t canary_t;
 		const canary_t canary = 0xC0FFEE;
 
 	#endif
@@ -64,7 +68,9 @@ enum errors_t
 	POP_ERROR             = 107,
 
 	CANARY_STK_ERROR      = 1001,
-	CANARY_STK_DATA_ERROR = 1002
+	CANARY_STK_DATA_ERROR = 1002,
+
+	PTR_MEMORY_ERROR      = 1000001
 };
 
 //-----------------------------------------------------------------------
