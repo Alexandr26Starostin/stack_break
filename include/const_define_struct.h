@@ -49,8 +49,6 @@ struct stk_t
 	#endif
 };
 
-
-
 //-----------------------------------------------------------------------
 
 #ifdef CANARY_STK_DATA 
@@ -68,17 +66,17 @@ struct stk_t
 
 enum errors_t 
 {
-	NOT_ERROR             = 0,
-	FALL_PTR_DATA         = 1,
-	SIZE_MORE_CAPACITY    = 2,
+	NOT_ERROR                 = 0,
+	FALL_PTR_DATA             = 1,
+	SIZE_MORE_CAPACITY        = 2,
 
-	CTOR_ERROR            = 11,    
-	DUMP_WRITE_ERROR      = 12,
-	DTOR_ERROR            = 13,
-	REALLOC_ERROR_BACK    = 14,
-	REALLOC_ERROR_FORWARD = 15,
-	PUSH_ERROR            = 16,
-	POP_ERROR             = 17,
+	CTOR_ERROR                = 11,    
+	DUMP_WRITE_ERROR          = 12,
+	DTOR_ERROR                = 13,
+	REALLOC_ERROR_BACK        = 14,
+	REALLOC_ERROR_FORWARD     = 15,
+	PUSH_ERROR                = 16,
+	POP_ERROR                 = 17,
 
 	#ifdef CANARY_STK
 		CANARY_STK_ERROR      = 101,
@@ -92,15 +90,8 @@ enum errors_t
 		HASH_ERROR            = 1001,
 	#endif
 
-	PTR_MEMORY_ERROR      = 10001
-};
-
-//-----------------------------------------------------------------------
-
-enum mode_realloc_t 
-{
-	REVERSE_TRUE  = 1,
-	REVERSE_FALSE = 0, 
+	PTR_MEMORY_ERROR          = 10001,
+	MEMSET_ERROR              = 10002
 };
 
 //------------------------------------------------------------------------
@@ -113,11 +104,11 @@ enum mode_realloc_t
 
 #else
 	#ifdef DEBUG_ASSERT
-		#define STK_ASSERT (ptr_stk, __FILE__, __LINE__);         \   
-																  \       
+		#define STK_ASSERT (ptr_stk, __FILE__, __LINE__);         \
+																  \
 			if ((stk_error (ptr_stk)) != NOT_ERROR)               \
 			{                                                     \
-				stk_dump (ptr_stk, __FILE__, __LINE__);           \ 
+				stk_dump (ptr_stk, __FILE__, __LINE__);           \
 				return (stk_error (ptr_stk));                     \
 			}                                
 	#else 
@@ -132,7 +123,7 @@ enum mode_realloc_t
 
 //--------------------------------------------------------------------------
 
-const int poison = 217;
+const int poison = 0xBAD;
 
 //--------------------------------------------------------------------------
 

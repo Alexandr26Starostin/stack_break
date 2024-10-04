@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "../include/const_define_struct.h"
+#include "../include/hash.h"
 #include "../include/stk_error.h"
 
  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,48 +65,3 @@ errors_t stk_error (stk_t* ptr_stk)
 
 	return NOT_ERROR;
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#ifdef HASH_STK
-
-	hash_t hash (char* ptr_stk, size_t len)
-	{
-		assert (ptr_stk);
-
-		hash_t hash = 5381;
-
-		for (size_t byte = 0; byte < len; byte++)
-		{
-			hash = ((hash << 5) + hash) ^ ptr_stk [byte];
-		}
-
-		return hash;
-	}
-
-	//-------------------------------------------------------------------------------------------------------------------------------------------------
-
-	errors_t count_hash (stk_t* ptr_stk)
-	{
-		assert (ptr_stk);
-
-		hash_t hash_1 = hash ((char*) ptr_stk, sizeof (stk_t) - sizeof (hash_t) * 2);
-
-		#ifdef CANARY_STK_DATA
-			char* ptr_memory = (char*) (*ptr_stk).data - sizeof (canary_t);
-			size_t len_data  = sizeof (canary_t) * 2 + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity % 8) * sizeof (char);
-
-		#else
-			char* ptr_memory = (char*) (*ptr_stk).data;
-			size_t len_data  = (*ptr_stk).capacity * sizeof (element_t);
-		#endif
-
-		hash_t hash_2 = hash (ptr_memory, len_data);
-
-		(*ptr_stk).hash_stk      = hash_1;
-		(*ptr_stk).hash_stk_data = hash_2;
-
-		return NOT_ERROR;
-	}
-
-#endif
