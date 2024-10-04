@@ -4,10 +4,17 @@
 #define DEBUG_ASSERT
 #define CANARY_STK
 #define CANARY_STK_DATA
+#define HASH_STK
 
-//----------------------------------------------------------------------
+//------------------------------------------------------------------
 
-typedef int element_t;
+#ifdef HASH_STK
+	#include "stdint.h"
+
+	typedef uint64_t hash_t;
+#endif
+
+//--------------------------------------------------------------------
 
 #ifdef CANARY_STK 
 
@@ -17,36 +24,42 @@ typedef int element_t;
 
 	const canary_t canary = 0xC0FFEE;
 
-	struct stk_t 
-	{
-		canary_t   canary_1;
-		size_t     size;
-		size_t     capacity;
-		element_t* data;
-		canary_t   canary_2;
-	};
-
-#else
-	struct stk_t 
-	{
-		size_t     size;
-		size_t     capacity;
-		element_t* data;
-	};
-
 #endif
+//----------------------------------------------------------------------
+
+typedef int element_t;
+
+struct stk_t 
+{
+	#ifdef CANARY_STK
+		canary_t canary_1;
+	#endif 
+
+	size_t     size;
+	size_t     capacity;
+	element_t* data;
+
+	#ifdef CANARY_STK
+		canary_t canary_2;
+	#endif 
+
+	#ifdef HASH_STK
+		hash_t hash_stk;
+		hash_t hash_stk_data;
+	#endif
+};
+
+
 
 //-----------------------------------------------------------------------
 
 #ifdef CANARY_STK_DATA 
     
 	#ifndef CANARY_STK
-
 		#include "stdint.h"
-
 		typedef uint64_t canary_t;
-		const canary_t canary = 0xC0FFEE;
 
+		const canary_t canary = 0xC0FFEE;
 	#endif
 
 #endif
@@ -59,18 +72,27 @@ enum errors_t
 	FALL_PTR_DATA         = 1,
 	SIZE_MORE_CAPACITY    = 2,
 
-	CTOR_ERROR            = 101,    
-	DUMP_WRITE_ERROR      = 102,
-	DTOR_ERROR            = 103,
-	REALLOC_ERROR_BACK    = 104,
-	REALLOC_ERROR_FORWARD = 105,
-	PUSH_ERROR            = 106,
-	POP_ERROR             = 107,
+	CTOR_ERROR            = 11,    
+	DUMP_WRITE_ERROR      = 12,
+	DTOR_ERROR            = 13,
+	REALLOC_ERROR_BACK    = 14,
+	REALLOC_ERROR_FORWARD = 15,
+	PUSH_ERROR            = 16,
+	POP_ERROR             = 17,
 
-	CANARY_STK_ERROR      = 1001,
-	CANARY_STK_DATA_ERROR = 1002,
+	#ifdef CANARY_STK
+		CANARY_STK_ERROR      = 101,
+	#endif
 
-	PTR_MEMORY_ERROR      = 1000001
+	#ifdef CANARY_STK_DATA
+		CANARY_STK_DATA_ERROR = 102,
+	#endif
+
+	#ifdef HASH_STK
+		HASH_ERROR            = 1001,
+	#endif
+
+	PTR_MEMORY_ERROR      = 10001
 };
 
 //-----------------------------------------------------------------------
@@ -91,8 +113,8 @@ enum mode_realloc_t
 
 #else
 	#ifdef DEBUG_ASSERT
-		#define STK_ASSERT (ptr_stk, __FILE__, __LINE__);         \          
-			                                                      \
+		#define STK_ASSERT (ptr_stk, __FILE__, __LINE__);         \   
+																  \       
 			if ((stk_error (ptr_stk)) != NOT_ERROR)               \
 			{                                                     \
 				stk_dump (ptr_stk, __FILE__, __LINE__);           \ 
@@ -106,8 +128,11 @@ enum mode_realloc_t
 				assert (NULL);                                    \
 			}   
 	#endif
-
 #endif
+
+//--------------------------------------------------------------------------
+
+const int poison = 217;
 
 //--------------------------------------------------------------------------
 
