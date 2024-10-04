@@ -40,7 +40,7 @@ errors_t stk_error (stk_t* ptr_stk)
 
 		COUNT_HASH;
 
-		if ((hash_2 != (*ptr_stk).hash_stk_data)) {return HASH_ERROR;}
+		if ((hash_2 != (*ptr_stk).hash_stk_data)) {return NOT_ERROR;}
 	#endif
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
