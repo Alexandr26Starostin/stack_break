@@ -44,7 +44,6 @@ struct stk_t
 	#endif 
 
 	#ifdef HASH_STK
-		hash_t hash_stk;
 		hash_t hash_stk_data;
 	#endif
 };
@@ -68,7 +67,6 @@ enum errors_t
 {
 	NOT_ERROR                 = 0,
 	FALL_PTR_DATA             = 1,
-	SIZE_MORE_CAPACITY        = 2,
 
 	CTOR_ERROR                = 11,    
 	DUMP_WRITE_ERROR          = 12,

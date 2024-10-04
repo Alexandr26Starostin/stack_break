@@ -262,19 +262,6 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 
 		return FALL_PTR_DATA;
 	}
-
-	//------------------------------------------------------------------------------------------------------------------
-
-	if (error_status == SIZE_MORE_CAPACITY)
-	{
-		printf ("ERROR   SIZE_MORE_CAPACITY  in file: %s, in line: %d\n", file, line);
-		
-		PRINT;
-
-		printf ("\t SIZE > CAPACITY\n\n");
-
-		return SIZE_MORE_CAPACITY;
-	}
     
 	//--------------------------------------------------------------------------------------------------------------------
 
@@ -318,7 +305,6 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 
 			COUNT_HASH;
 
-			printf ("\t our_hash_stk  == %ld\n", hash_1);
 			printf ("\t our_hash_stk_data  == %ld\n", hash_2);
 		}
 	#endif

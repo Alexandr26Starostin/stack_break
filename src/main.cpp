@@ -29,6 +29,8 @@ int main ()
 		if (stk_dump (&stk, __FILE__, __LINE__)) {return DUMP_WRITE_ERROR;}
 	}
 
+	stk.size = 100000;
+
 	if (stk_dump (&stk, __FILE__, __LINE__)) {return DUMP_WRITE_ERROR;}
 
 	if (stk_dtor (&stk)) {return DTOR_ERROR;}

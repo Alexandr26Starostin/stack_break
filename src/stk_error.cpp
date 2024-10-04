@@ -17,13 +17,6 @@ errors_t stk_error (stk_t* ptr_stk)
 	{
 		return FALL_PTR_DATA;
 	}
-    
-	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	if ((*ptr_stk).size > (*ptr_stk).capacity)
-	{
-		return SIZE_MORE_CAPACITY;
-	}
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -45,20 +38,9 @@ errors_t stk_error (stk_t* ptr_stk)
 
 	#ifdef HASH_STK
 
-		hash_t hash_1 = hash ((char*) ptr_stk, sizeof (stk_t) - sizeof (hash_t) * 2);
+		COUNT_HASH;
 
-		#ifdef CANARY_STK_DATA
-			char* ptr_memory = (char*) (*ptr_stk).data - sizeof (canary_t);
-			size_t len_data  = sizeof (canary_t) * 2 + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity % 8) * sizeof (char);
-
-		#else
-			char* ptr_memory = (char*) (*ptr_stk).data;
-			size_t len_data  = (*ptr_stk).capacity * sizeof (element_t);
-		#endif
-
-		hash_t hash_2 = hash (ptr_memory, len_data);
-
-		if ((hash_1 != (*ptr_stk).hash_stk) || (hash_2 != (*ptr_stk).hash_stk_data)) {return HASH_ERROR;}
+		if ((hash_2 != (*ptr_stk).hash_stk_data)) {return HASH_ERROR;}
 	#endif
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

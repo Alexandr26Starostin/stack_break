@@ -30,7 +30,6 @@
 
 		COUNT_HASH;
 
-		(*ptr_stk).hash_stk      = hash_1;
 		(*ptr_stk).hash_stk_data = hash_2;
 
 		return NOT_ERROR;

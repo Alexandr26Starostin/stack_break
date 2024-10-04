@@ -33,7 +33,6 @@
 
 #ifdef HASH_STK
 	#define PRINT_HASH;                                                      \
-		printf ("\t hash_stk      == %ld\n",   (*ptr_stk).hash_stk);        \
 		printf ("\t hash_stk_data == %ld\n\n", (*ptr_stk).hash_stk_data);   
 	#else 
 		#define PRINT_HASH
