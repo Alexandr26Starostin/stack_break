@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
 #define PRINT_INF_ABOUT_STK                                                         \
-		printf ("\t ptr_stk             == %p  \n",  ptr_stk           );            \
+		printf ("\t ptr_stk  == %p             \n", ptr_stk            );            \
 		printf ("\t ptr_data == %p             \n", (*ptr_stk).data    );            \
 		printf ("\t size     == %ld            \n", (*ptr_stk).size    );            \
 		printf ("\t capacity == %ld            \n", (*ptr_stk).capacity);            \
@@ -23,7 +23,7 @@
 #ifdef CANARY_STK_DATA
 	#define PRINT_CANARY_STK_DATA                                                                                                                                     \
 		canary_t canary_3 = *((canary_t*) ((char*) (*ptr_stk).data - sizeof (canary_t)));                                                                              \
-		canary_t canary_4 = *((canary_t*) ((char*) ((*ptr_stk).data) + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity % 8) * sizeof (char)));     \
+		canary_t canary_4 = *((canary_t*) ((char*) ((*ptr_stk).data) + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity * sizeof (element_t) % 8) * sizeof (char)));     \
                                                                                                                                                                        \
 		printf ("\t canary_3 == %lx\n", canary_3);                                                                                                                      \
 		printf ("\t canary_4 == %lx\n", canary_4);                                                                                                                      

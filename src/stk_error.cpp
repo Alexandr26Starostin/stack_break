@@ -29,7 +29,7 @@ errors_t stk_error (stk_t* ptr_stk)
 	#ifdef CANARY_STK_DATA
 
 		canary_t canary_3 = *((canary_t*) ((char*) ((*ptr_stk).data) - sizeof (canary_t)));
-		canary_t canary_4 = *((canary_t*) ((char*) ((*ptr_stk).data) + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity % 8) * sizeof (char)));
+		canary_t canary_4 = *((canary_t*) ((char*) ((*ptr_stk).data) + (*ptr_stk).capacity * sizeof (element_t) + (8 - (*ptr_stk).capacity * sizeof (element_t) % 8) * sizeof (char)));
 
 		if ((canary_3 != canary) || (canary_4 != canary)) {return CANARY_STK_DATA_ERROR;}
 	#endif
@@ -40,7 +40,7 @@ errors_t stk_error (stk_t* ptr_stk)
 
 		COUNT_HASH;
 
-		if ((hash_2 != (*ptr_stk).hash_stk_data)) {return NOT_ERROR;}
+		if (hash_2 != (*ptr_stk).hash_stk_data) {return NOT_ERROR;}
 	#endif
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

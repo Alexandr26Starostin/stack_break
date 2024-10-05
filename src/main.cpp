@@ -13,13 +13,13 @@ int main ()
 
 	if (stk_dump (&stk, __FILE__, __LINE__)) {return DUMP_WRITE_ERROR;}
 
-	for (element_t element = 1; element < 51; element++)
+	for (element_t element = 1; element < 67; element++)
 	{
 		if (stk_push (&stk, element)) {return PUSH_ERROR;}
 	}
 
 	if (stk_dump (&stk, __FILE__, __LINE__)) {return DUMP_WRITE_ERROR;}
-
+	
 	element_t use = 0;
 
 	for (size_t quantity_print = 1; quantity_print < 51; quantity_print++)
