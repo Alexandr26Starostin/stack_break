@@ -272,7 +272,7 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 		
 			PRINT;
 
-			printf ("\t canary_true == %x\n", canary);
+			printf ("\t canary_true == %lx\n", canary);
 			printf ("\t canary_1 or canary_2 != canary_true\n\n");
 
 			return CANARY_STK_ERROR;
@@ -289,7 +289,7 @@ errors_t stk_dump (stk_t* ptr_stk, const char* file, const int line)
 			
 			PRINT;
 
-			printf ("\t canary_true == %x\n", canary);
+			printf ("\t canary_true == %lxx\n", canary);
 			printf ("\t canary_3 or canary_4 != canary_true\n\n");
 		}
 	#endif
